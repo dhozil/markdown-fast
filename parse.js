@@ -1197,9 +1197,11 @@ function parseInline(src, links) {
         res = parseInlineLinkAt(src, i);
         if (res) res.end = res.end;
       }
+      let refMatched = false;
       if (!res && src[i] === '[') {
         const m = RE_REF_LABEL.exec(src.slice(i));
         if (m) {
+          refMatched = true;
           const def = links[normalizeLabel(m[1])];
           if (def) res = { href: def.href, title: def.title, end: i + m[0].length };
         } else if (src[i + 1] === ']') {
@@ -1207,7 +1209,7 @@ function parseInline(src, links) {
           if (def) res = { href: def.href, title: def.title, end: i + 2 };
         }
       }
-      if (!res) {
+      if (!res && !refMatched) {
         const def = links[normalizeLabel(src.slice(b.srcPos + 1, closePos))];
         if (def) res = { href: def.href, title: def.title, end: i };
       }
